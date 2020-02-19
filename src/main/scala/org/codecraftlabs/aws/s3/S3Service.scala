@@ -1,6 +1,7 @@
 package org.codecraftlabs.aws.s3
 
 import org.apache.logging.log4j.{LogManager, Logger}
+import org.codecraftlabs.aws.AwsRegion.UsEast1
 import org.codecraftlabs.aws.AwsRegionUtil.region
 import org.codecraftlabs.aws.{AwsException, AwsRegion}
 import software.amazon.awssdk.awscore.exception.AwsServiceException
@@ -10,14 +11,14 @@ import software.amazon.awssdk.services.s3.model.{CreateBucketRequest, DeleteBuck
 object S3Service {
   @transient private lazy val logger: Logger = LogManager.getLogger(S3Service.getClass)
 
-  def create(buckets: List[S3Bucket]): Unit = {
-    buckets.foreach(create)
+  def create(buckets: List[S3Bucket], awsRegion: AwsRegion.Value = UsEast1): Unit = {
+    buckets.foreach(item => create(item, awsRegion))
   }
 
-  def create(bucket: S3Bucket): Unit = {
+  def create(bucket: S3Bucket, awsRegion: AwsRegion.Value = UsEast1): Unit = {
     try {
       logger.info(s"Creating the bucket '$bucket'")
-      val s3Client = S3Client.builder.region(region(bucket.getRegion)).build
+      val s3Client = S3Client.builder.region(region(awsRegion)).build
       val request = CreateBucketRequest.builder.bucket(bucket.getName).build
       s3Client.createBucket(request)
       logger.info(s"Bucket '${bucket.getName}' created successfully")
