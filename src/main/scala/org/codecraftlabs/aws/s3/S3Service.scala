@@ -6,21 +6,24 @@ import org.codecraftlabs.aws.AwsRegionUtil.region
 import org.codecraftlabs.aws.{AwsException, AwsRegion}
 import software.amazon.awssdk.awscore.exception.AwsServiceException
 import software.amazon.awssdk.services.s3.S3Client
-import software.amazon.awssdk.services.s3.model.{CreateBucketRequest, DeleteBucketRequest, ListBucketsRequest}
+import software.amazon.awssdk.services.s3.model.{CreateBucketRequest, DeleteBucketRequest, ListBucketsRequest, PublicAccessBlockConfiguration, PutPublicAccessBlockRequest}
 
 object S3Service {
   @transient private lazy val logger: Logger = LogManager.getLogger(S3Service.getClass)
 
-  def create(buckets: List[S3Bucket], awsRegion: AwsRegion.Value = UsEast1): Unit = {
+  def create(buckets: List[S3Bucket], awsRegion: AwsRegion.Value): Unit = {
     buckets.foreach(item => create(item, awsRegion))
   }
 
-  def create(bucket: S3Bucket, awsRegion: AwsRegion.Value = UsEast1): Unit = {
+  def create(bucket: S3Bucket, awsRegion: AwsRegion.Value): Unit = {
     try {
       logger.info(s"Creating the bucket '$bucket' in region '$awsRegion'")
       val s3Client = S3Client.builder.region(region(awsRegion)).build
       val request = CreateBucketRequest.builder.bucket(bucket.getName).build
       s3Client.createBucket(request)
+
+      val blockRequest = PutPublicAccessBlockRequest.builder().bucket(bucket.getName).publicAccessBlockConfiguration(PublicAccessBlockConfiguration.builder().blockPublicPolicy(true).build()).build()
+      s3Client.putPublicAccessBlock(blockRequest)
       logger.info(s"Bucket '${bucket.getName}' created successfully")
     } catch {
       case exception: AwsServiceException =>
