@@ -1,8 +1,8 @@
 package org.codecraftlabs.aws
 
-import org.codecraftlabs.aws.AwsRegionUtil
 import org.scalatest.{FlatSpec, Matchers}
 import software.amazon.awssdk.regions.Region._
+import org.codecraftlabs.aws.AwsRegion._
 
 class AwsRegionUtilSpec extends FlatSpec with Matchers {
   "When passing us-east-1" should "return US_EAST_1 (AWS region)" in {
