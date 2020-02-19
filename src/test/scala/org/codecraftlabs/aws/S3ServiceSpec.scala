@@ -12,7 +12,7 @@ class S3ServiceSpec extends AnyFlatSpec with Matchers {
       create(bucket)
       delete(bucket)
     } catch {
-      case _: AwsException => fail("S3 bucket create should work")
+      case _: AwsException => fail("S3 bucket create and delete should work")
     }
   }
 }
