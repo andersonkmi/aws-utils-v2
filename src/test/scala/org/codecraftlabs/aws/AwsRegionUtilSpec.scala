@@ -1,10 +1,11 @@
 package org.codecraftlabs.aws
 
-import org.scalatest.{FlatSpec, Matchers}
 import software.amazon.awssdk.regions.Region._
 import org.codecraftlabs.aws.AwsRegion._
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class AwsRegionUtilSpec extends FlatSpec with Matchers {
+class AwsRegionUtilSpec extends AnyFlatSpec with Matchers {
   "When passing us-east-1" should "return US_EAST_1 (AWS region)" in {
     val region = AwsRegionUtil.region(UsEast1)
     region shouldEqual US_EAST_1
