@@ -2,6 +2,7 @@ package org.codecraftlabs.aws.s3
 
 import org.apache.logging.log4j.{LogManager, Logger}
 import org.codecraftlabs.aws.AwsException
+import org.codecraftlabs.aws.AwsRegionUtil.region
 import software.amazon.awssdk.awscore.exception.AwsServiceException
 import software.amazon.awssdk.services.s3.S3Client
 import software.amazon.awssdk.services.s3.model.CreateBucketRequest
