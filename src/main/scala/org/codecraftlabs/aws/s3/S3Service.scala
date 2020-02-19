@@ -17,7 +17,7 @@ object S3Service {
 
   def create(bucket: S3Bucket, awsRegion: AwsRegion.Value = UsEast1): Unit = {
     try {
-      logger.info(s"Creating the bucket '$bucket'")
+      logger.info(s"Creating the bucket '$bucket' in region '$awsRegion'")
       val s3Client = S3Client.builder.region(region(awsRegion)).build
       val request = CreateBucketRequest.builder.bucket(bucket.getName).build
       s3Client.createBucket(request)
