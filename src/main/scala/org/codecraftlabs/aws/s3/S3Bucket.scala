@@ -32,9 +32,21 @@ class S3Bucket {
 
   def getName: String = this.name
 
+  def setName(name: String): Unit = {
+    this.name = name
+  }
+
   def getRegion: AwsRegion.Value = this.region
 
+  def setRegion(region: AwsRegion.Value): Unit = {
+    this.region = region
+  }
+
   def getCreationDateTime: Instant = this.creationDateTime
+
+  def setCreationDateTime(creationDateTime: Instant): Unit = {
+    this.creationDateTime = creationDateTime
+  }
 
   override def toString: String = s"{'name':'$name', 'region': '${region.code}', 'creationDateTime': '${creationDateTime.toString}'}"
 
