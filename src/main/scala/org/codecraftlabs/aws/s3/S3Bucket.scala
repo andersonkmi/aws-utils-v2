@@ -1,7 +1,5 @@
 package org.codecraftlabs.aws.s3
 
-import java.time.Instant
-import java.time.Instant.now
 import java.util.Date
 
 import org.codecraftlabs.aws.AwsRegion
