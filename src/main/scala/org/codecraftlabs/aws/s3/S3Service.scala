@@ -22,8 +22,6 @@ object S3Service {
       val request = CreateBucketRequest.builder.bucket(bucket.getName).build
       s3Client.createBucket(request)
 
-      val blockRequest = PutPublicAccessBlockRequest.builder().bucket(bucket.getName).publicAccessBlockConfiguration(PublicAccessBlockConfiguration.builder().blockPublicPolicy(true).build()).build()
-      s3Client.putPublicAccessBlock(blockRequest)
       logger.info(s"Bucket '${bucket.getName}' created successfully")
     } catch {
       case exception: AwsServiceException =>
@@ -59,10 +57,23 @@ object S3Service {
       val response = s3Client.listBuckets(request)
       val buckets = response.buckets.asScala
       Option(buckets.map(element => new S3Bucket(element.name(), element.creationDate())).toList)
-    } catch  {
+    } catch {
       case exception: AwsServiceException =>
         logger.warn("Error when listing buckets")
         throw AwsException("Error when listing buckets", exception)
     }
+  }
+
+  def blockPublicAccess(bucket: S3Bucket, awsRegion: AwsRegion.Value): Unit = {
+    try {
+      val blockRequest = PutPublicAccessBlockRequest.builder().bucket(bucket.getName).publicAccessBlockConfiguration(PublicAccessBlockConfiguration.builder().blockPublicPolicy(true).build()).build()
+      val s3Client = S3Client.builder.region(region(awsRegion)).build
+      s3Client.putPublicAccessBlock(blockRequest)
+    } catch {
+      case exception: AwsServiceException =>
+        logger.warn("Error when blocking bucket")
+        throw AwsException("Error when blocking bucket", exception)
+    }
+
   }
 }
