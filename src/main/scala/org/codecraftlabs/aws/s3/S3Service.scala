@@ -74,6 +74,5 @@ object S3Service {
         logger.warn("Error when blocking bucket")
         throw AwsException("Error when blocking bucket", exception)
     }
-
   }
 }
