@@ -1,5 +1,7 @@
 package org.codecraftlabs.aws.s3
 
+import java.util.Date
+
 import org.apache.logging.log4j.{LogManager, Logger}
 import org.codecraftlabs.aws.AwsRegionUtil.region
 import org.codecraftlabs.aws.{AwsException, AwsRegion}
@@ -55,7 +57,7 @@ object S3Service {
       val request = ListBucketsRequest.builder.build
       val response = s3Client.listBuckets(request)
       val buckets = response.buckets.asScala
-      Option(buckets.map(element => new S3Bucket(element.name(), element.creationDate())).toList)
+      Option(buckets.map(element => new S3Bucket(element.name(), Date.from(element.creationDate()))).toList)
     } catch {
       case exception: AwsServiceException =>
         logger.warn("Error when listing buckets")
