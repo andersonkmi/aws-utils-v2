@@ -65,7 +65,15 @@ object S3Service {
 
   def blockPublicAccess(bucket: S3Bucket, awsRegion: AwsRegion.Value): Unit = {
     try {
-      val blockRequest = PutPublicAccessBlockRequest.builder().bucket(bucket.getName).publicAccessBlockConfiguration(PublicAccessBlockConfiguration.builder().blockPublicPolicy(true).build()).build()
+      logger.info(s"Blocking public access for the bucket '$bucket' in region '$awsRegion'")
+
+      val config = PublicAccessBlockConfiguration.builder()
+        .blockPublicAcls(true)
+        .blockPublicPolicy(true)
+        .restrictPublicBuckets(true)
+        .ignorePublicAcls(true)
+        .build()
+      val blockRequest = PutPublicAccessBlockRequest.builder().bucket(bucket.getName).publicAccessBlockConfiguration(config).build()
       val s3Client = S3Client.builder.region(region(awsRegion)).build
       s3Client.putPublicAccessBlock(blockRequest)
     } catch {
