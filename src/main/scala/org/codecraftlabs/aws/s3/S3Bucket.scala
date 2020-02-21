@@ -2,13 +2,14 @@ package org.codecraftlabs.aws.s3
 
 import java.time.Instant
 import java.time.Instant.now
+import java.util.Date
 
 import org.codecraftlabs.aws.AwsRegion
 
 class S3Bucket {
   private var name = ""
   private var region = AwsRegion.UsEast1
-  private var creationDateTime = now
+  private var creationDateTime = new Date()
 
   def this(name: String) {
     this()
@@ -20,12 +21,12 @@ class S3Bucket {
     this.region = region
   }
 
-  def this(name: String, creationDateTime: Instant) {
+  def this(name: String, creationDateTime: Date) {
     this(name)
     this.creationDateTime = creationDateTime
   }
 
-  def this(name: String, region: AwsRegion.Value, creationDateTime: Instant) {
+  def this(name: String, region: AwsRegion.Value, creationDateTime: Date) {
     this(name, region)
     this.creationDateTime = creationDateTime
   }
@@ -42,12 +43,12 @@ class S3Bucket {
     this.region = region
   }
 
-  def getCreationDateTime: Instant = this.creationDateTime
+  def getCreationDateTime: Date = this.creationDateTime
 
-  def setCreationDateTime(creationDateTime: Instant): Unit = {
+  def setCreationDateTime(creationDateTime: Date): Unit = {
     this.creationDateTime = creationDateTime
   }
 
-  override def toString: String = s"{'name':'$name', 'region': '${region.code}', 'creationDateTime': '${creationDateTime.toString}'}"
+  override def toString: String = s"{'name':'$name', 'region': '${region.code}', 'creationDateTime': '${creationDateTime.toInstant}'}"
 
 }
