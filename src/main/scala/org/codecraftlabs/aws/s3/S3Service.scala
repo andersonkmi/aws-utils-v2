@@ -1,12 +1,11 @@
 package org.codecraftlabs.aws.s3
 
 import org.apache.logging.log4j.{LogManager, Logger}
-import org.codecraftlabs.aws.AwsRegion.UsEast1
 import org.codecraftlabs.aws.AwsRegionUtil.region
 import org.codecraftlabs.aws.{AwsException, AwsRegion}
 import software.amazon.awssdk.awscore.exception.AwsServiceException
 import software.amazon.awssdk.services.s3.S3Client
-import software.amazon.awssdk.services.s3.model.{CreateBucketRequest, DeleteBucketRequest, ListBucketsRequest, PublicAccessBlockConfiguration, PutPublicAccessBlockRequest}
+import software.amazon.awssdk.services.s3.model._
 
 object S3Service {
   @transient private lazy val logger: Logger = LogManager.getLogger(S3Service.getClass)
