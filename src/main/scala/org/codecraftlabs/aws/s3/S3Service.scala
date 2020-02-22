@@ -4,7 +4,7 @@ import java.util.Date
 
 import org.apache.logging.log4j.{LogManager, Logger}
 import org.codecraftlabs.aws.AwsRegionUtil.region
-import org.codecraftlabs.aws.{AwsException, AwsRegion}
+import org.codecraftlabs.aws.{AwsException, AwsRegion, s3}
 import software.amazon.awssdk.awscore.exception.AwsServiceException
 import software.amazon.awssdk.services.s3.S3Client
 import software.amazon.awssdk.services.s3.model._
@@ -89,5 +89,9 @@ object S3Service {
         logger.warn("Error when blocking bucket")
         throw AwsException("Error when blocking bucket", exception)
     }
+  }
+
+  def listObjects(bucket: S3Bucket): Option[List[s3.S3Object]] = {
+    None
   }
 }
