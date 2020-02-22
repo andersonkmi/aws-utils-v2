@@ -1,7 +1,5 @@
 package org.codecraftlabs.aws
 
-import java.util.Date
-
 import org.codecraftlabs.aws.AwsRegion.UsEast1
 import org.codecraftlabs.aws.s3.S3Bucket
 import org.codecraftlabs.aws.s3.S3Service.{blockPublicAccess, create, delete}
