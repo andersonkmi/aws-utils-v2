@@ -20,10 +20,10 @@ object S3Service {
     try {
       logger.info(s"Creating the bucket '$bucket' in region '$awsRegion'")
       val s3Client = S3Client.builder.region(region(awsRegion)).build
-      val request = CreateBucketRequest.builder.bucket(bucket.name).build
+      val request = CreateBucketRequest.builder.bucket(bucket.getName).build
       s3Client.createBucket(request)
 
-      logger.info(s"Bucket '${bucket.name}' created successfully")
+      logger.info(s"Bucket '${bucket.getName}' created successfully")
     } catch {
       case exception: AwsServiceException =>
         logger.warn("Error when creating bucket")
@@ -34,10 +34,10 @@ object S3Service {
   def delete(bucket: S3Bucket): Unit = {
     try {
       logger.info(s"Deleting the bucket '$bucket'")
-      val s3Client = S3Client.builder.region(region(bucket.region)).build
-      val request = DeleteBucketRequest.builder.bucket(bucket.name).build
+      val s3Client = S3Client.builder.region(region(bucket.getRegion)).build
+      val request = DeleteBucketRequest.builder.bucket(bucket.getName).build
       s3Client.deleteBucket(request)
-      logger.info(s"Bucket '${bucket.name}' deleted successfully")
+      logger.info(s"Bucket '${bucket.getName}' deleted successfully")
     } catch {
       case exception: AwsServiceException =>
         logger.warn("Error when deleting bucket")
@@ -57,7 +57,13 @@ object S3Service {
       val request = ListBucketsRequest.builder.build
       val response = s3Client.listBuckets(request)
       val buckets = response.buckets.asScala
-      Option(buckets.map(element => S3Bucket(element.name(), awsRegion, Date.from(element.creationDate()))).toList)
+      Option(buckets.map(
+        element => {
+          val bucket = new S3Bucket(element.name())
+          bucket.setRegion(awsRegion)
+          bucket.setCreationDateTime(Date.from(element.creationDate()))
+          bucket
+        }).toList)
     } catch {
       case exception: AwsServiceException =>
         logger.warn("Error when listing buckets")
@@ -75,7 +81,7 @@ object S3Service {
         .restrictPublicBuckets(true)
         .ignorePublicAcls(true)
         .build()
-      val blockRequest = PutPublicAccessBlockRequest.builder().bucket(bucket.name).publicAccessBlockConfiguration(config).build()
+      val blockRequest = PutPublicAccessBlockRequest.builder().bucket(bucket.getName).publicAccessBlockConfiguration(config).build()
       val s3Client = S3Client.builder.region(region(awsRegion)).build
       s3Client.putPublicAccessBlock(blockRequest)
     } catch {
