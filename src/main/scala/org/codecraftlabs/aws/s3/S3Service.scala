@@ -4,10 +4,10 @@ import java.util.Date
 
 import org.apache.logging.log4j.{LogManager, Logger}
 import org.codecraftlabs.aws.AwsRegionUtil.region
-import org.codecraftlabs.aws.{AwsException, AwsRegion, s3}
+import org.codecraftlabs.aws.{AwsException, AwsRegion}
 import software.amazon.awssdk.awscore.exception.AwsServiceException
 import software.amazon.awssdk.services.s3.S3Client
-import software.amazon.awssdk.services.s3.model._
+import software.amazon.awssdk.services.s3.model.{CreateBucketRequest, DeleteBucketRequest, ListBucketsRequest, PublicAccessBlockConfiguration, PutPublicAccessBlockRequest}
 
 object S3Service {
   @transient private lazy val logger: Logger = LogManager.getLogger(S3Service.getClass)
@@ -91,7 +91,7 @@ object S3Service {
     }
   }
 
-  def listObjects(bucket: S3Bucket): Option[List[s3.S3Object]] = {
+  def listObjects(bucket: S3Bucket): Option[List[S3Object]] = {
     None
   }
 }
