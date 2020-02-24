@@ -7,7 +7,7 @@ import org.codecraftlabs.aws.AwsRegionUtil.region
 import org.codecraftlabs.aws.{AwsException, AwsRegion}
 import software.amazon.awssdk.awscore.exception.AwsServiceException
 import software.amazon.awssdk.services.s3.S3Client
-import software.amazon.awssdk.services.s3.model.{CreateBucketRequest, DeleteBucketRequest, ListBucketsRequest, PublicAccessBlockConfiguration, PutPublicAccessBlockRequest}
+import software.amazon.awssdk.services.s3.model.{CreateBucketRequest, DeleteBucketRequest, ListBucketsRequest, ListObjectsRequest, PublicAccessBlockConfiguration, PutPublicAccessBlockRequest, S3Exception}
 
 object S3Service {
   @transient private lazy val logger: Logger = LogManager.getLogger(S3Service.getClass)
@@ -92,6 +92,25 @@ object S3Service {
   }
 
   def listObjects(bucket: S3Bucket): Option[List[S3Object]] = {
-    None
+    import scala.jdk.CollectionConverters._
+    try {
+      val listObjects = ListObjectsRequest.builder().bucket(bucket.getName).build()
+      val s3Client = S3Client.builder.region(region(bucket.getRegion)).build
+      val res = s3Client.listObjects(listObjects)
+      val objects = res.contents().asScala
+
+      Option(objects.map(item => {
+        val s3Object = new S3Object(item.key())
+        s3Object.setETag(item.eTag())
+        s3Object.setLastModified(Date.from(item.lastModified()))
+        s3Object.setSize(item.size())
+        s3Object.setStorageClass(item.storageClassAsString())
+        s3Object
+      }).toList)
+    } catch {
+      case exception: S3Exception =>
+        logger.warn("Error when listing S3 objects")
+        throw AwsException("Error when listing S3 objects", exception)
+    }
   }
 }
