@@ -28,7 +28,19 @@ class S3ServiceSpec extends AnyFlatSpec with Matchers {
       assert(filtered.nonEmpty)
       delete(bucket)
     } catch {
-      case _: AwsException => fail("S3 bucket create and delete should work")
+      case _: AwsException => fail("S3 bucket find should work")
+    }
+  }
+
+  "This test" should "list all S3 buckets" in {
+    try {
+      val buckets = list(UsEast1)
+      assert(buckets.isDefined)
+      assert(buckets.get.nonEmpty)
+      val filtered = buckets.get.filter(i => i.getName.equals("kihei-data-lake"))
+      assert(filtered.nonEmpty)
+    } catch {
+      case _: AwsException => fail("S3 bucket list should work")
     }
   }
 }
