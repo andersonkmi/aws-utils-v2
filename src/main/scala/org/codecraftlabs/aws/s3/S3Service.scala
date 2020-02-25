@@ -3,6 +3,7 @@ package org.codecraftlabs.aws.s3
 import java.util.Date
 
 import org.apache.logging.log4j.{LogManager, Logger}
+import org.codecraftlabs.aws.AwsRegion.UsEast1
 import org.codecraftlabs.aws.AwsRegionUtil.region
 import org.codecraftlabs.aws.{AwsException, AwsRegion}
 import software.amazon.awssdk.awscore.exception.AwsServiceException
@@ -94,8 +95,9 @@ object S3Service {
   def listObjects(bucket: S3Bucket): Option[List[S3Object]] = {
     import scala.jdk.CollectionConverters._
     try {
+      logger.info(s"Listing all S3 objects inside '${bucket.getName}'")
       val listObjects = ListObjectsRequest.builder().bucket(bucket.getName).build()
-      val s3Client = S3Client.builder.region(region(bucket.getRegion)).build
+      val s3Client = S3Client.builder.region(region(UsEast1)).build
       val res = s3Client.listObjects(listObjects)
       val objects = res.contents().asScala
 
