@@ -46,10 +46,11 @@ class S3ServiceSpec extends AnyFlatSpec with Matchers {
 
   "This test" should "list S3 objects" in {
     try {
-      val bucket = new S3Bucket("kihei-data-lake")
+      val bucket = new S3Bucket("order-data-lake")
       val objects = listObjects(bucket)
       assert(objects.isDefined)
       assert(objects.get.nonEmpty)
+      objects.get.foreach(s => println(s.getKey))
     } catch {
       case _: AwsException => fail("S3 bucket list should work")
     }

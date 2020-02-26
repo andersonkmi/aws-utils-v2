@@ -8,7 +8,9 @@ import org.codecraftlabs.aws.AwsRegionUtil.region
 import org.codecraftlabs.aws.{AwsException, AwsRegion}
 import software.amazon.awssdk.awscore.exception.AwsServiceException
 import software.amazon.awssdk.services.s3.S3Client
-import software.amazon.awssdk.services.s3.model.{CreateBucketRequest, DeleteBucketRequest, ListBucketsRequest, ListObjectsRequest, PublicAccessBlockConfiguration, PutPublicAccessBlockRequest, S3Exception}
+import software.amazon.awssdk.services.s3.model.{CreateBucketRequest, DeleteBucketRequest, ListBucketsRequest, ListObjectsRequest, ListObjectsV2Request, ListObjectsV2Response, PublicAccessBlockConfiguration, PutPublicAccessBlockRequest, S3Exception}
+
+import scala.collection.mutable.ListBuffer
 
 object S3Service {
   @transient private lazy val logger: Logger = LogManager.getLogger(S3Service.getClass)
@@ -96,19 +98,34 @@ object S3Service {
     import scala.jdk.CollectionConverters._
     try {
       logger.info(s"Listing all S3 objects inside '${bucket.getName}'")
-      val listObjects = ListObjectsRequest.builder().bucket(bucket.getName).build()
       val s3Client = S3Client.builder.region(region(UsEast1)).build
-      val res = s3Client.listObjects(listObjects)
-      val objects = res.contents().asScala
+      val items = ListBuffer[S3Object]()
 
-      Option(objects.map(item => {
-        val s3Object = new S3Object(item.key())
-        s3Object.setETag(item.eTag())
-        s3Object.setLastModified(Date.from(item.lastModified()))
-        s3Object.setSize(item.size())
-        s3Object.setStorageClass(item.storageClassAsString())
-        s3Object
-      }).toList)
+      var continuationToken: Option[String] = None
+      var result: ListObjectsV2Response = null
+      do {
+        var listObjectsRequest: ListObjectsV2Request = null
+        if (continuationToken.isDefined) {
+          listObjectsRequest = ListObjectsV2Request.builder().bucket(bucket.getName).continuationToken(continuationToken.get).build()
+        } else {
+          listObjectsRequest = ListObjectsV2Request.builder().bucket(bucket.getName).build()
+        }
+
+        result = s3Client.listObjectsV2(listObjectsRequest)
+        val objects = result.contents().asScala
+        items.addAll(objects.map(item => {
+          val s3Object = new S3Object(item.key())
+          s3Object.setETag(item.eTag())
+          s3Object.setLastModified(Date.from(item.lastModified()))
+          s3Object.setSize(item.size())
+          s3Object.setStorageClass(item.storageClassAsString())
+          s3Object
+        }).toList)
+
+        continuationToken = Option(result.continuationToken())
+      } while (result.isTruncated)
+
+      Option(items.toList)
     } catch {
       case exception: S3Exception =>
         logger.warn("Error when listing S3 objects")
