@@ -115,4 +115,6 @@ object S3Service {
         throw AwsException("Error when listing S3 objects", exception)
     }
   }
+
+  def uploadObject(bucket: S3Bucket, awsRegion: AwsRegion.Value, fileName: String) = ???
 }
