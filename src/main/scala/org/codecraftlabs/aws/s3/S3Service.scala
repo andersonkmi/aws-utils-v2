@@ -134,4 +134,6 @@ object S3Service {
   }
 
   def uploadObject(bucket: S3Bucket, awsRegion: AwsRegion.Value, fileName: String) = ???
+
+  def downloadObject(bucket: S3Bucket, key: String, awsRegion: AwsRegion.Value, fileName: String) = ???
 }
